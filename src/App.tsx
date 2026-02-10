@@ -1,16 +1,21 @@
-import { useState } from "react";
-import useInput from "./hooks/useInput.tsx";
+import { useRef, useState } from "react";
+import Hover from "./components/Hover.tsx";
+import useHover from "./hooks/userHover.js";
 
 function App() {
-  const username = useInput("");
-  const password = useInput("");
+  const ref = useRef();
+  const isBlackHovering = useHover(ref);
   return (
     <div>
-      <input {...username} type="text" placeholder="username" />
-      <input {...password} type="text" placeholder="password" />
-      <button
-        onClick={() => console.log(username.value, password.value)}
-      ></button>
+      <Hover />
+      <div
+        ref={ref}
+        style={{
+          width: 300,
+          height: 300,
+          backgroundColor: isBlackHovering ? "blue" : "black",
+        }}
+      ></div>
     </div>
   );
 }
