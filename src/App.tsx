@@ -1,31 +1,32 @@
 import { useRef, useState } from "react";
-import Hover from "./components/Hover.tsx";
-import useHover from "./hooks/userHover.js";
-import List from "./components/List.tsx";
 import ky from "ky";
-import useDebounce from "./hooks/useDebounce.js";
+
+import useRequest from "./hooks/useRequest.js";
 
 function App() {
-  const [value, setValue] = useState("");
-  const debouncedSearch = useDebounce(search, 500);
-  async function search(query) {
-    try {
-      const todos = await ky(
-        `https://jsonplaceholder.typicode.com/todos?query=` + query,
-      ).json();
-      console.log(todos);
-    } catch (e) {
-      console.log(e.message);
-    }
+  const [todos, loading, error] = useRequest(kyTodos);
+
+  function kyTodos() {
+    return ky.get(`https://jsonplaceholder.typicode.com/todsdos`);
+  }
+  console.log(todos);
+
+  if (loading) {
+    return <h1>Идёт загрузка ...</h1>;
   }
 
-  const onChange = (e) => {
-    setValue(e.target.value);
-    debouncedSearch(e.target.value);
-  };
+  if (error) {
+    return <h1>Произошла ошибка</h1>;
+  }
   return (
     <div>
-      <input type="text" value={value} onChange={onChange} />
+      {/* {loading && <h1>Идёт загрузка</h1>} */}
+      {todos &&
+        todos.map((todo) => (
+          <div key={todo.id} style={{ padding: 30, border: "2px solid black" }}>
+            {todo.id} {todo.title}
+          </div>
+        ))}
     </div>
   );
 }
